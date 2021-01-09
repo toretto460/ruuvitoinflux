@@ -14,6 +14,8 @@ type Writer interface {
 type SensorData interface {
 	SensorID() string
 	Temp() float64
+	Humidity() float64
+	Pressure() uint32
 }
 
 type Filter interface {
@@ -45,7 +47,15 @@ func (a *App) RecordData(data SensorData) bool {
 	}
 
 	if pass {
-		a.writer.WriteRecord(fmt.Sprintf("temperature,sensor=%s,unit=temperature avg=%f", data.SensorID(), data.Temp()))
+		a.writer.WriteRecord(
+			fmt.Sprintf("temperature,sensor=%s,unit=temperature avg=%f", data.SensorID(), data.Temp()),
+		)
+		a.writer.WriteRecord(
+			fmt.Sprintf("humidity,sensor=%s,unit=precentage avg=%f", data.SensorID(), data.Humidity()),
+		)
+		a.writer.WriteRecord(
+			fmt.Sprintf("pressure,sensor=%s,unit=hectopascal avg=%d", data.SensorID(), data.Pressure()),
+		)
 	}
 
 	return true
